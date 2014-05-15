@@ -16,11 +16,15 @@ public:
 signals:
 
 public slots:
+    void connectionError(QAbstractSocket::SocketError socketError);
 
 private:
     QTcpSocket* client;
 
 private:
+
+
+
     void recvMessage();
 
     void stateChanged(QAbstractSocket::SocketState socketState);

@@ -22,3 +22,5 @@ HEADERS += \
 
 
 Qt += network
+
+CONFIG += c++11
