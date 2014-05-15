@@ -2,6 +2,7 @@
 #define HATCHMESSENGER_H
 
 #include <QObject>
+#include <QTcpSocket>
 
 class HatchMessenger : public QObject
 {
@@ -9,9 +10,20 @@ class HatchMessenger : public QObject
 public:
     explicit HatchMessenger(QObject *parent = 0);
 
+public:
+    void connectToHost();
+
 signals:
 
 public slots:
+
+private:
+    QTcpSocket* client;
+
+private:
+    void recvMessage();
+
+    void stateChanged(QAbstractSocket::SocketState socketState);
 
 };
 

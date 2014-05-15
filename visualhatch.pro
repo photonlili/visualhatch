@@ -19,3 +19,6 @@ qtcAddDeployment()
 
 HEADERS += \
     hatchmessenger.h
+
+
+Qt += network
