@@ -18,6 +18,10 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 
     connect(client, &QTcpSocket::disconnected, this, &HatchMessenger::connectToHost);
 
+    connect(client, &QAbstractSocket::connected, [](){
+        qDebug() << "im connected";
+    });
+
     connectToHost();
 }
 
@@ -39,6 +43,11 @@ void HatchMessenger::connectToHost()
 
     if( client->waitForConnected() )
         qDebug() << "connected";
+    else
+    {
+        QThread::sleep(3);
+        emit client->disconnected();
+    }
 
 
 
@@ -57,7 +66,7 @@ void HatchMessenger::connectionError(QAbstractSocket::SocketError socketError)
     qDebug() << socketError;
 
 
-    client->abort();
+   /* client->abort();
     client->close();
     qDebug() << client->state() << client->isValid();
 
@@ -68,5 +77,6 @@ void HatchMessenger::connectionError(QAbstractSocket::SocketError socketError)
         //emit client->disconnected();
         connectToHost();
     }
+    */
 
 }
