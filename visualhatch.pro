@@ -24,3 +24,6 @@ HEADERS += \
 Qt += network
 
 CONFIG += c++11
+
+OTHER_FILES += \
+    qml/visualhatch/LoginBox.qml
