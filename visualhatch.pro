@@ -18,7 +18,8 @@ include(qtquick2applicationviewer/qtquick2applicationviewer.pri)
 qtcAddDeployment()
 
 HEADERS += \
-    hatchmessenger.h
+    hatchmessenger.h \
+    common.h
 
 
 Qt += network
