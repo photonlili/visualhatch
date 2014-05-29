@@ -34,11 +34,14 @@ private:
     void initSendList();
 
     void recvMessage();
+    bool splitMessage(QByteArray* data);
 
     void stateChanged(QAbstractSocket::SocketState socketState);
 
     void sendHeartBeat();
     void sendMessage4000(); //login
+    void sendMessage4069();
+    void sendMessage4067();
 };
 
 #endif // HATCHMESSENGER_H

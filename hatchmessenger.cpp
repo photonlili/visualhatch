@@ -22,6 +22,8 @@ HatchMessenger::HatchMessenger(QObject *parent) :
     connect(client, &QAbstractSocket::connected, [=](){
 
         sendMessage4000();
+        //sendMessage4069();
+        //sendMessage4067();
         //sendHeartBeat();
     });
 
@@ -33,11 +35,35 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 
 }
 
+bool HatchMessenger::splitMessage(QByteArray *data)
+{
+    QDataStream msgStream(data,QIODevice::ReadWrite);
+    msgStream.setByteOrder(QDataStream::LittleEndian);
+
+    char end = 255;
+
+    EC_HEADER header = {0,0,0,0};
+    msgStream >> header.load_len;
+    msgStream >> header.msgType;
+    msgStream >> header.msgId;
+    msgStream >> header.sevId;
+
+    QByteArray msgBodyArray = data->remove(0,sizeof(EC_HEADER));
+
+
+    if( header.msgType == ENUM_ANSWER_RDT_PARAM_4100 )
+        sendMessage4069();
+    if( header.msgType == ENUM_AMSWER_RDT_RH_VESSEL_TK_REFRESH_4169)
+        sendMessage4067();
+
+    return false;
+}
+
 void HatchMessenger::recvMessage()
 {
     QByteArray data = client->readAll();
-    QString str(data);
-    qDebug() << str;
+
+    splitMessage(&data);
 }
 
 void HatchMessenger::connectToHost()
@@ -47,7 +73,7 @@ void HatchMessenger::connectToHost()
     client->setSocketOption(QAbstractSocket::KeepAliveOption, va);
     client->abort();
     client->close();
-    client->connectToHost("192.168.1.13", 5555);
+    client->connectToHost("192.168.0.115", 5555);
 
 
 
@@ -151,7 +177,19 @@ void HatchMessenger::sendHeartBeat()
 void HatchMessenger::sendMessage4000()
 {
     QString rdtId = "t01";
-    QString msg = "T01*1*0*";
+    QString msg = "RH01*1*0*";
 
-    sendMessage(ENUM_QUERY_RDT_PARAM_4000,msg);
+    sendMessage(ENUM_QUERY_RDT_PARAM_4000,msg.toUpper());
+}
+
+void HatchMessenger::sendMessage4069()
+{
+    QString msg = "RH01*EASMG1*";
+    sendMessage(ENUM_QUERY_RDT_RH_VESSEL_TK_REFRESH_4069, msg);
+}
+
+void HatchMessenger::sendMessage4067()
+{
+    QString msg = "RH01*EASMG1*1*3*";
+    sendMessage(ENUM_QUERY_RDT_BAY_STOWAGE_4067, msg);
 }
