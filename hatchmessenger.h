@@ -6,6 +6,7 @@
 #include <QTcpSocket>
 #include <QByteArray>
 #include "common.h"
+#include "messagereader.h"
 
 class HatchMessenger : public QObject
 {
@@ -32,6 +33,10 @@ private:
 
 
     void initSendList();
+
+
+    QList<MessageReader*> readerList;
+    void initReaderList();
 
     void recvMessage();
     bool splitMessage(QByteArray* data);

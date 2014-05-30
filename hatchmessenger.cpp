@@ -5,11 +5,15 @@
 #include <QVariant>
 #include <QThread>
 
+const QString HOST = "192.168.0.115";
+
+
 HatchMessenger::HatchMessenger(QObject *parent) :
     QObject(parent)
 {
     client = new QTcpSocket(this);
 
+    initReaderList();
 
 
     connect(client, &QTcpSocket::readyRead, this, &HatchMessenger::recvMessage);
@@ -35,6 +39,11 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 
 }
 
+void HatchMessenger::initReaderList()
+{
+    readerList.push_back(new Reader4100);
+}
+
 bool HatchMessenger::splitMessage(QByteArray *data)
 {
     QDataStream msgStream(data,QIODevice::ReadWrite);
@@ -49,6 +58,15 @@ bool HatchMessenger::splitMessage(QByteArray *data)
     msgStream >> header.sevId;
 
     QByteArray msgBodyArray = data->remove(0,sizeof(EC_HEADER));
+    msgBodyArray = msgBodyArray.left(msgBodyArray.count()-1);
+
+    qDebug() << "Msg type:" << header.msgType;
+
+    foreach(MessageReader* reader, readerList)
+    {
+        if( reader->getMsgType() == header.msgType )
+            reader->read(&msgBodyArray);
+    }
 
 
     if( header.msgType == ENUM_ANSWER_RDT_PARAM_4100 )
@@ -73,7 +91,7 @@ void HatchMessenger::connectToHost()
     client->setSocketOption(QAbstractSocket::KeepAliveOption, va);
     client->abort();
     client->close();
-    client->connectToHost("192.168.0.115", 5555);
+    client->connectToHost(HOST, 5555);
 
 
 

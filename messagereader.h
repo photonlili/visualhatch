@@ -12,7 +12,7 @@ public:
     explicit MessageReader(QObject *parent = 0);
 
     virtual void read(QByteArray* data) = 0;
-    ENUM_MSG_TYPE getMsgType() {return m_type;} ;
+    ENUM_MSG_TYPE getMsgType() {return m_type;}
 
 signals:
 
@@ -22,5 +22,16 @@ protected:
     ENUM_MSG_TYPE m_type;
 
 };
+
+
+//READ 4000 RETURN
+class Reader4100 : public MessageReader
+{
+    Q_OBJECT
+public:
+    explicit Reader4100(QObject* parent = 0);
+    void read(QByteArray *data);
+};
+
 
 #endif // MESSAGEREADER_H
