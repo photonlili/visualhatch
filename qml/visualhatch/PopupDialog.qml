@@ -25,6 +25,8 @@ Item {
 
     opacity: opacitypopup
 
+
+
     Rectangle {
         anchors.fill: parent
         anchors.centerIn: parent
@@ -54,13 +56,20 @@ Item {
                     anchors.fill: parent
 
                     TextField {
+                        id: rdtIdText
                         //width: parent.width
                         Layout.fillWidth: true
                         placeholderText: "RDT id"
+
+                        onAccepted:{
+                            userIdText.forceActiveFocus()
+                            root.emitMessage4000(text)
+                        }
                     }
 
                     TextField {
                         //width: parent.width
+                        id:userIdText
                         Layout.fillWidth: true
                         placeholderText: "User id"
                     }

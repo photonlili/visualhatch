@@ -25,7 +25,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 
     connect(client, &QAbstractSocket::connected, [=](){
 
-        sendMessage4000();
+        //sendMessage4000("rh01");
         //sendMessage4069();
         //sendMessage4067();
         //sendHeartBeat();
@@ -192,10 +192,10 @@ void HatchMessenger::sendHeartBeat()
 
 }
 
-void HatchMessenger::sendMessage4000()
+void HatchMessenger::sendMessage4000(const QString &rdtId)
 {
-    QString rdtId = "t01";
-    QString msg = "RH01*1*0*";
+    QString msg = rdtId + "*1*0*";
+    //QString msg = "RH01*1*0*";
 
     sendMessage(ENUM_QUERY_RDT_PARAM_4000,msg.toUpper());
 }

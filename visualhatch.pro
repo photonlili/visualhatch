@@ -24,7 +24,7 @@ HEADERS += \
     messagereader.h
 
 
-Qt += network
+Qt += network quick
 
 CONFIG += c++11
 

@@ -25,6 +25,10 @@ signals:
 public slots:
     void connectionError(QAbstractSocket::SocketError socketError);
 
+    void sendMessage4000( const QString& rdtId ); //login
+    void sendMessage4069();
+    void sendMessage4067();
+
 private:
     QTcpSocket* client;
     QList<QByteArray> outlist;
@@ -44,9 +48,7 @@ private:
     void stateChanged(QAbstractSocket::SocketState socketState);
 
     void sendHeartBeat();
-    void sendMessage4000(); //login
-    void sendMessage4069();
-    void sendMessage4067();
+
 };
 
 #endif // HATCHMESSENGER_H

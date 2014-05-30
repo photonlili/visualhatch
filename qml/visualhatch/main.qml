@@ -13,6 +13,15 @@ Item
     //height:300
     opacity: 1
 
+    signal qmlSignal(string msg)
+
+    function emitMessage4000(data){
+        if( data.length )
+        {
+            qmlSignal(data);
+            console.log("Emit:" + data);
+        }
+    }
 
 
     Rectangle
@@ -47,7 +56,11 @@ Item
 
         Component.onCompleted:
         {
-            Qt.createComponent("PopupDialog.qml").createObject(root,{})
+      //      Qt.createComponent("PopupDialog.qml").createObject(root,{"id":"hello"})
+        }
+
+        PopupDialog{
+
         }
 
     }
