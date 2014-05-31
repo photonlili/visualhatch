@@ -26,3 +26,26 @@ void Reader4100::read(QByteArray *data)
         qDebug() << "Success: " << msg;
 }
 
+Reader4101::Reader4101(QObject *parent) : MessageReader(parent)
+{
+    m_type = ENUM_ANSWER_RDT_LOGIN_4101;
+}
+
+void Reader4101::read(QByteArray *data)
+{
+    QString msg = QString(*data);
+    QStringList msgList = msg.split("*");
+    //qDebug() << msgList;
+
+    if( msgList.at(1) != "0" )
+    {
+        qDebug() << "Error: " << msg;
+    }
+    else
+    {
+        //qobject_cast<HatchMessenger*>(parent)->sendHeartBeat("RHX","RHX123");
+        qDebug() << "Success: " << msg;
+
+    }
+}
+

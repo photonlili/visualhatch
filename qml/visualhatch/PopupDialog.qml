@@ -4,6 +4,8 @@ import QtQuick.Layouts 1.0
 
 
 Item {
+
+    objectName: "loginPopupDlg"
     id: popupDlg
 
     width:parent.width
@@ -11,14 +13,14 @@ Item {
     //width:400
     //height:300
     anchors.centerIn: parent
-    Behavior on opacity { NumberAnimation {
-            duration: 1000
-        } }
+    Behavior on opacity { NumberAnimation { duration: 1000 } }
 
     PropertyAnimation { target: popupDlg; property: "opacity";
                                      duration: 800; from: 0; to: 1;
                                      easing.type: Easing.InOutQuad ; running: true }
 
+
+    property alias infomationMsg : infoMessage.text
 
 
 
@@ -45,7 +47,7 @@ Item {
             GroupBox {
                 id: rdtLoginBox
                 flat:false
-                title: "Fill necessary infomation to login"
+                title: ""
                 Layout.fillWidth: true
 
                 ColumnLayout {
@@ -63,7 +65,9 @@ Item {
 
                         onAccepted:{
                             userIdText.forceActiveFocus()
+                            rdtIdText.readOnly = true
                             root.emitMessage4000(text)
+                            infomationMsg = "param done"
                         }
                     }
 
@@ -75,19 +79,43 @@ Item {
                     }
                     TextField {
                         //width: parent.width
+                        id: passwordText
                         Layout.fillWidth: true
                         placeholderText: "User password"
+
+                        onAccepted: {
+                            opacitypopup = 0
+                            root.emitMessage4001(rdtIdText.text, userIdText.text, passwordText.text )
+                            popupDlg.destroy(1000)
+                        }
                     }
                 }
             }
 
             GroupBox{
-                id: loginButtons
+
                 Layout.fillWidth: true
                 flat: true
+                Text{
+                    id: infoMessage
+                    anchors.centerIn: parent
+                    Layout.fillWidth: true
+                    text:"hello world"
+
+                }
+            }
+
+            GroupBox{
+
+                Layout.fillWidth: true
+                flat: true
+
+
+
                 Button{
                     //x: 130
                     //y: 0
+                    id: loginButton
                     anchors.centerIn: parent
 
                     text: "Login"
@@ -95,6 +123,7 @@ Item {
 
                     onClicked: {
                         opacitypopup = 0
+                        root.emitMessage4001(rdtIdText.text, userIdText.text, passwordText.text )
                         popupDlg.destroy(1000)
                     }
                 }

@@ -3,6 +3,7 @@ import QtQuick.Window 2.1
 
 Item
 {
+    objectName: "rootObject"
     id:root
     property int opacitypopup: 1
 
@@ -13,19 +14,28 @@ Item
     //height:300
     opacity: 1
 
-    signal qmlSignal(string msg)
+    signal message4000(string msg)
+    signal message4001(string rdtId, string userId, string password)
 
     function emitMessage4000(data){
         if( data.length )
         {
-            qmlSignal(data);
-            console.log("Emit:" + data);
+            message4000(data);
+            console.log("Emit 4000:" + data);
         }
     }
 
+    function emitMessage4001(rdtId, userId, password) {
+        if(rdtId.length && userId.length && password.length ){
+            message4001(rdtId, userId, password);
+            console.log("Emit 4001: " + rdtId + " " + userId + " " + password );
+        }
+
+    }
 
     Rectangle
     {
+        objectName: "rootRect"
         opacity: parent.opacity
         color:"lightgreen"
         width: parent.width

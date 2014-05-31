@@ -18,6 +18,15 @@ int main(int argc, char *argv[])
     //view.show();
 
     QQuickItem *item = viewer.rootObject();
+    QList<QQuickItem *> children = item->childItems();
+
+
+    qDebug() << item->objectName();
+    foreach( QQuickItem* cc, item->childItems() )
+    {
+        qDebug() << cc->objectName();
+    }
+
 
 
 
@@ -25,7 +34,9 @@ int main(int argc, char *argv[])
 
     //QQuickItem* item2 = loginview.rootObject();
 
-    QObject::connect(item, SIGNAL(qmlSignal(QString)),msger, SLOT(sendMessage4000(QString)));
+    QObject::connect(item, SIGNAL(message4000(QString)),msger, SLOT(sendMessage4000(QString)));
+    QObject::connect(item, SIGNAL(message4001(QString, QString, QString)),
+                                  msger, SLOT(sendMessage4001(QString,QString,QString)) );
 
     return app.exec();
 }

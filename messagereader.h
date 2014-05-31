@@ -34,4 +34,16 @@ public:
 };
 
 
+///READ 4101 LOGIN RETURN
+/// ENUM_QUERY_RDT_LOGIN_4001
+class Reader4101 : public MessageReader
+{
+    Q_OBJECT
+public:
+    explicit Reader4101(QObject* parent = 0);
+    void read(QByteArray *data);
+};
+
+
+
 #endif // MESSAGEREADER_H

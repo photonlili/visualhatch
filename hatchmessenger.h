@@ -25,7 +25,10 @@ signals:
 public slots:
     void connectionError(QAbstractSocket::SocketError socketError);
 
-    void sendMessage4000( const QString& rdtId ); //login
+    void sendHeartBeat(const QString &rdtId, const QString &userId);
+    void sendMessage4000( const QString& rdtId ); //query rdt parameter
+    void sendMessage4001(const QString& rdtId, const QString& userId, const QString& password);
+    void sendmessage4004(const QString& pow, const QString& vesselRef, const QString& craneId, const QString& bundleId);
     void sendMessage4069();
     void sendMessage4067();
 
@@ -47,7 +50,7 @@ private:
 
     void stateChanged(QAbstractSocket::SocketState socketState);
 
-    void sendHeartBeat();
+
 
 };
 

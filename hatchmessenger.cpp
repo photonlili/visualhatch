@@ -5,7 +5,7 @@
 #include <QVariant>
 #include <QThread>
 
-const QString HOST = "192.168.0.115";
+const QString HOST = "192.168.1.102";
 
 
 HatchMessenger::HatchMessenger(QObject *parent) :
@@ -29,6 +29,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
         //sendMessage4069();
         //sendMessage4067();
         //sendHeartBeat();
+        sendHeartBeat("RHX","RHX123");
     });
 
     connectToHost();
@@ -42,6 +43,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 void HatchMessenger::initReaderList()
 {
     readerList.push_back(new Reader4100);
+    readerList.push_back(new Reader4101);
 }
 
 bool HatchMessenger::splitMessage(QByteArray *data)
@@ -49,7 +51,7 @@ bool HatchMessenger::splitMessage(QByteArray *data)
     QDataStream msgStream(data,QIODevice::ReadWrite);
     msgStream.setByteOrder(QDataStream::LittleEndian);
 
-    char end = 255;
+    //char end = 255;
 
     EC_HEADER header = {0,0,0,0};
     msgStream >> header.load_len;
@@ -60,7 +62,7 @@ bool HatchMessenger::splitMessage(QByteArray *data)
     QByteArray msgBodyArray = data->remove(0,sizeof(EC_HEADER));
     msgBodyArray = msgBodyArray.left(msgBodyArray.count()-1);
 
-    qDebug() << "Msg type:" << header.msgType;
+    qDebug() << "Reader Msg type:" << header.msgType;
 
     foreach(MessageReader* reader, readerList)
     {
@@ -69,10 +71,12 @@ bool HatchMessenger::splitMessage(QByteArray *data)
     }
 
 
-    if( header.msgType == ENUM_ANSWER_RDT_PARAM_4100 )
+    /*if( header.msgType == ENUM_ANSWER_RDT_PARAM_4100 )
         sendMessage4069();
     if( header.msgType == ENUM_AMSWER_RDT_RH_VESSEL_TK_REFRESH_4169)
         sendMessage4067();
+
+    */
 
     return false;
 }
@@ -169,20 +173,20 @@ void HatchMessenger::initSendList()
 
 void HatchMessenger::sendMessage(quint16 msgType, const QString &msg,ENUM_SEND_MODE sendmode)
 {
-    qDebug() << "Sending msg: " << msg;
+    qDebug() << "Sending msg: " << msgType << msg;
     QByteArray data = buildPackage(msgType,1,msg.toStdString().c_str());
     client->write(data);
 }
 
-void HatchMessenger::sendHeartBeat()
+void HatchMessenger::sendHeartBeat(const QString& rdtId, const QString& userId)
 {
-    QString rdtId = "rh01";
-    QString userId = "123";
+    //QString rdtId = "RHX";
+    //QString userId = "RHX123";
     QString msg = rdtId.toUpper() + "*3*" + userId.toUpper() + "*N*0*nogps*";
 
 
     QTimer* timer = new QTimer;
-    timer->setInterval(3000);
+    timer->setInterval(10000);
     timer->start();
     connect(timer, &QTimer::timeout,[=](){
         static int heartbeatno = 0;
@@ -198,6 +202,22 @@ void HatchMessenger::sendMessage4000(const QString &rdtId)
     //QString msg = "RH01*1*0*";
 
     sendMessage(ENUM_QUERY_RDT_PARAM_4000,msg.toUpper());
+}
+
+void HatchMessenger::sendMessage4001(const QString &rdtId, const QString &userId, const QString &password)
+{
+    //RDTID*LOGTYPE*USERNAME*PASSWORD
+    QString msg = rdtId.toUpper() + "*7*" + userId + "*" + password;
+    sendMessage(ENUM_QUERY_RDT_LOGIN_4001,msg);
+}
+
+void HatchMessenger::sendmessage4004(const QString& pow, const QString& vesselRef,
+                                     const QString& craneId, const QString& bundleId)
+{
+    //RDTID*PowName*VesselRefNo*USERNAME*CraneUserId*BundleId
+    QString msg = "RHX" + "*" + pow.toUpper() + "*" + vesselRef.toUpper() +
+                  "*" + "RHX123" +"*" + craneId + "*" + bundleId;
+    sendMessage(ENUM_QUERY_RDT_POINT_AND_VESSEL_LOGIN_4004,msg);
 }
 
 void HatchMessenger::sendMessage4069()
