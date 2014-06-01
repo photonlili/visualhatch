@@ -33,46 +33,11 @@ Item
 
     }
 
-    Rectangle
-    {
-        objectName: "rootRect"
-        opacity: parent.opacity
-        color:"lightgreen"
-        width: parent.width
-        height:parent.height
-
-        Text
-        {
-            anchors.centerIn: parent
-
-            font.family: "Segoe UI Light"
-            font.pixelSize: 20
-            text : "Hello World!"
-            color: "black"
-        }
-        MouseArea
-        {
-            anchors.fill: parent
-
-            onClicked:
-            {
-                console.log("root clicked");
-                opacitypopup = 1
-
-                Qt.createComponent("PopupDialog.qml").createObject(root,{})
-            }
-        }
-
-
-        Component.onCompleted:
-        {
-      //      Qt.createComponent("PopupDialog.qml").createObject(root,{"id":"hello"})
-        }
-
-        PopupDialog{
-
-        }
-
+    //PopupDialog{}
+    WorkPointDialog{}
+    Component.onCompleted: {
+        Qt.createComponent("PopupDialog.qml").createObject(root,{})
     }
+
 }
 

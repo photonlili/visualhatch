@@ -44,6 +44,14 @@ public:
     void read(QByteArray *data);
 };
 
+class Reader4110 : public MessageReader
+{
+    Q_OBJECT
+public:
+    explicit Reader4110(QObject* parent = 0);
+    void read(QByteArray *data);
+};
+
 
 
 #endif // MESSAGEREADER_H

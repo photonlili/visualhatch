@@ -1,6 +1,20 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <QString>
+/// Global user settings
+/// RDTid UseId CraneId BundleId ...
+struct User
+{
+    QString userId;
+    QString rdtId;
+    QString craneId;
+    QString bundleId;
+    QString powName;
+    QString vesselRef;
+};
+
+
 /** 发送模式枚举值*/
 typedef enum enum_send_mode
 {

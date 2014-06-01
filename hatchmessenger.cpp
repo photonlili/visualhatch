@@ -4,9 +4,11 @@
 #include <QTimer>
 #include <QVariant>
 #include <QThread>
+#include <QString>
 
-const QString HOST = "192.168.1.102";
+const QString HOST = "192.168.1.4";
 
+User user;
 
 HatchMessenger::HatchMessenger(QObject *parent) :
     QObject(parent)
@@ -168,7 +170,6 @@ void HatchMessenger::initSendList()
 
         outlist.push_back(data);
     });
-
 }
 
 void HatchMessenger::sendMessage(quint16 msgType, const QString &msg,ENUM_SEND_MODE sendmode)
@@ -215,7 +216,7 @@ void HatchMessenger::sendmessage4004(const QString& pow, const QString& vesselRe
                                      const QString& craneId, const QString& bundleId)
 {
     //RDTID*PowName*VesselRefNo*USERNAME*CraneUserId*BundleId
-    QString msg = "RHX" + "*" + pow.toUpper() + "*" + vesselRef.toUpper() +
+    QString msg = QString("RHX") + "*" + pow.toUpper() + "*" + vesselRef.toUpper() +
                   "*" + "RHX123" +"*" + craneId + "*" + bundleId;
     sendMessage(ENUM_QUERY_RDT_POINT_AND_VESSEL_LOGIN_4004,msg);
 }

@@ -87,6 +87,7 @@ Item {
                             opacitypopup = 0
                             root.emitMessage4001(rdtIdText.text, userIdText.text, passwordText.text )
                             popupDlg.destroy(1000)
+                            Qt.createComponent("WorkPointDialog.qml").createObject(root,{})
                         }
                     }
                 }
@@ -125,6 +126,7 @@ Item {
                         opacitypopup = 0
                         root.emitMessage4001(rdtIdText.text, userIdText.text, passwordText.text )
                         popupDlg.destroy(1000)
+                        //Qt.createComponent("WorkPointDialog.qml").createObject(root,{})
                     }
                 }
 
