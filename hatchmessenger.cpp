@@ -5,10 +5,12 @@
 #include <QVariant>
 #include <QThread>
 #include <QString>
+#include <QList>
 
 const QString HOST = "192.168.1.4";
 
 User user;
+QList<PORT_COLOR_INFO> portColorList;
 
 HatchMessenger::HatchMessenger(QObject *parent) :
     QObject(parent)
@@ -46,6 +48,8 @@ void HatchMessenger::initReaderList()
 {
     readerList.push_back(new Reader4100);
     readerList.push_back(new Reader4101);
+    readerList.push_back(new Reader4110);
+    readerList.push_back(new Reader4130);
 }
 
 bool HatchMessenger::splitMessage(QByteArray *data)
@@ -215,7 +219,7 @@ void HatchMessenger::sendMessage4001(const QString &rdtId, const QString &userId
 void HatchMessenger::sendmessage4004(const QString& pow, const QString& vesselRef,
                                      const QString& craneId, const QString& bundleId)
 {
-    //RDTID*PowName*VesselRefNo*USERNAME*CraneUserId*BundleId
+    //RDTID**VesselRefNo*USERNAME*CraneUserId*BundleId
     QString msg = QString("RHX") + "*" + pow.toUpper() + "*" + vesselRef.toUpper() +
                   "*" + "RHX123" +"*" + craneId + "*" + bundleId;
     sendMessage(ENUM_QUERY_RDT_POINT_AND_VESSEL_LOGIN_4004,msg);

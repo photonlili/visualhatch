@@ -7,12 +7,25 @@
 struct User
 {
     QString userId;
+    QString userName;
     QString rdtId;
     QString craneId;
+    QString craneName;
     QString bundleId;
+    QString bundleName;
     QString powName;
     QString vesselRef;
+    QString vesselClass;
 };
+
+typedef struct port_color_com_info
+{
+    QString port;        //港口代码
+    int  red;			   //红色分量
+    int  green;           //绿色分量
+    int  blue;            //蓝色分量
+}PORT_COLOR_INFO;
+
 
 
 /** 发送模式枚举值*/

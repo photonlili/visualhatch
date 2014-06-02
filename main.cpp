@@ -37,6 +37,10 @@ int main(int argc, char *argv[])
     QObject::connect(item, SIGNAL(message4000(QString)),msger, SLOT(sendMessage4000(QString)));
     QObject::connect(item, SIGNAL(message4001(QString, QString, QString)),
                                   msger, SLOT(sendMessage4001(QString,QString,QString)) );
+    QObject::connect(item, SIGNAL(message4004(QString, QString, QString, QString)),
+                                  msger, SLOT(sendmessage4004(QString,QString,QString,QString)));
+
+
 
     return app.exec();
 }

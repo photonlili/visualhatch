@@ -16,6 +16,7 @@ Item
 
     signal message4000(string msg)
     signal message4001(string rdtId, string userId, string password)
+    signal message4004(string pow, string vessel, string craneId, string bundleId)
 
     function emitMessage4000(data){
         if( data.length )
@@ -30,7 +31,20 @@ Item
             message4001(rdtId, userId, password);
             console.log("Emit 4001: " + rdtId + " " + userId + " " + password );
         }
+    }
 
+    function emitMessage4004( pow, vessel, craneId, bundleId, callback){
+
+        if( pow.length && vessel.length )
+        {
+            message4004( pow, vessel, craneId, bundleId )
+            console.log("Emit 4004: " + pow + " " + vessel + " " + craneId + " " + bundleId);
+            return;
+        }
+        if( pow.length === 0 )
+            callback("Pow name");
+        else if( vessel.length === 0 )
+            callback("Vessel Reference");
     }
 
     //PopupDialog{}

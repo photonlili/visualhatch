@@ -53,5 +53,16 @@ public:
 };
 
 
+/// Read 4130 ENUM_ANSWER_RDT_LOGIN_VESSEL_POW_INFO_4130
+/// ENUM_ANSWER_RDT_LOGIN_VESSEL_POW_INFO_4130
+class Reader4130 : public MessageReader
+{
+    Q_OBJECT
+public:
+    explicit Reader4130(QObject* parent = 0):MessageReader(parent){
+        m_type = ENUM_ANSWER_RDT_LOGIN_VESSEL_POW_INFO_4130;
+    }
+    void read(QByteArray *data);
+};
 
 #endif // MESSAGEREADER_H

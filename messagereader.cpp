@@ -2,6 +2,7 @@
 #include <QDebug>
 
 extern User user;
+extern QList<PORT_COLOR_INFO> portColorList;
 
 MessageReader::MessageReader(QObject *parent):QObject(parent)
 {
@@ -81,3 +82,36 @@ void Reader4110::read(QByteArray *data)
     }
 }
 
+void Reader4130::read(QByteArray *data)
+{
+    QString msg = QString(*data);
+    QStringList msgList = msg.split("*");
+
+    //RDTID*VesselClass*RHUserName*CRUserName*BDUserName*portcolorInfo*
+    user.vesselRef = msgList.at(1);
+    user.userName = msgList.at(2);
+    user.craneName = msgList.at(3);
+    user.bundleName = msgList.at(4);
+    QString colorInfo = msgList.at(5);
+
+    int portNum = colorInfo.left(2).toInt();
+    qDebug() << "port num:" << portNum;
+
+    for( int i = 0; i < portNum; i++ )
+    {
+        PORT_COLOR_INFO info;
+        info.port = colorInfo.mid(2+12*i,3);
+        info.red = colorInfo.mid(5+12*i,3).toInt();
+        info.green = colorInfo.mid(8+12*i,3).toInt();
+        info.blue = colorInfo.mid(11+12*i,3).toInt();
+        portColorList.push_back(info);
+    }
+
+    qDebug() << "Success: 4130" << msg;
+
+    foreach(PORT_COLOR_INFO info, portColorList)
+    {
+        qDebug() << info.port << info.red << info.green << info.blue;
+    }
+
+}
