@@ -17,7 +17,7 @@ Item
         width: parent.width
         height:parent.height
 
-        property bool menu_shown: false
+        property bool left_menu_shown: false
         property bool right_menu_shown: false
 
         // MENU RECT
@@ -66,7 +66,7 @@ Item
                                                  menu_bundle_input.text,function(msg){
                                                      console.log("Invalid input: " + msg)
                                                  })
-                           rootRect.onMenu()
+                           rootRect.onMenuLeft()
                        }
                    }
 
@@ -82,7 +82,7 @@ Item
                                                 menu_bundle_input.text, function(msg){
                                                     console.log("Invalid input: " + msg)
                                                 })
-                           rootRect.onMenu()
+                           rootRect.onMenuLeft()
                        }
                    }
 
@@ -98,7 +98,7 @@ Item
                                                 menu_bundle_input.text,function(msg){
                                                     console.log("Invalid input: " + msg)
                                                 })
-                           rootRect.onMenu()
+                           rootRect.onMenuLeft()
                        }
                    }
 
@@ -114,7 +114,7 @@ Item
                                                 menu_bundle_input.text,function(msg){
                                                     console.log("Invalid input: " + msg)
                                                 })
-                           rootRect.onMenu()
+                           rootRect.onMenuLeft()
                        }
                    }
 
@@ -163,7 +163,7 @@ Item
 
 
                 Rectangle {
-                    id: menu_button
+                    id: menu_left_button
                     radius: 2
                     anchors {left: parent.left; verticalCenter: parent.verticalCenter; margins: 24 }
                     color: "white"; width: 28; height: 28; smooth: true
@@ -185,7 +185,7 @@ Item
                         id: menu_button_mouse
                         anchors.fill: parent
                         onClicked: {
-                            rootRect.onMenu()
+                            rootRect.onMenuLeft()
                         }
 
                     }
@@ -221,7 +221,56 @@ Item
                 }
             }
 
+            PinchArea {
+                property real  g_scale
+                anchors.fill: parent
+                pinch.target: main_view
+                enabled: true
+                onPinchUpdated: {
+                    //g_scale = pinch.scale
+                    slot_container.scale = pinch.scale
+                    console.log(g_scale)
+                }
+            }
+
+            Rectangle {
+                id: slot_container
+                anchors.fill: parent
+                anchors.top: menu_bar.bottom
+                anchors.topMargin: 40
+                anchors.leftMargin: 15
+                anchors.rightMargin: 15
+                anchors.bottomMargin: 15
+
+                border.color: "green"
+
+                width: 50
+                height: 50
+                scale: g_scale
+
+                Column {
+                    spacing: 6
+                    Rectangle { color: "red"; width: 50; height: 50 }
+                        Rectangle {
+                            id: greenRect; color: "green"; width: 20; height: 50
+
+                        }
+                        Rectangle { color: "blue"; width: 50; height: 20 }
+                        focus: true
+                        Keys.onSpacePressed: greenRect.visible = !greenRect.visible
+                }
+
+                Rectangle {
+                    id: test_rect
+                    width:20
+                    height:20
+                    border.color: "red"
+                    anchors.centerIn: parent
+                    scale: parent.scale
+                }
+            }
         }
+
 
 
         Component.onCompleted:
@@ -234,9 +283,9 @@ Item
         //PopupDialog{}
         //WorkPointDialog{}
 
-        function onMenu() {
-            game_translate_.x = rootRect.menu_shown ? 0 : rootRect.width * 0.28
-            rootRect.menu_shown = !rootRect.menu_shown;
+        function onMenuLeft() {
+            game_translate_.x = rootRect.left_menu_shown ? 0 : rootRect.width * 0.28
+            rootRect.left_menu_shown = !rootRect.left_menu_shown;
         }
 
         function onMenuRight() {

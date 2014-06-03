@@ -7,7 +7,7 @@
 #include <QString>
 #include <QList>
 
-const QString HOST = "192.168.1.4";
+const QString HOST = "192.168.0.109";
 
 User user;
 QList<PORT_COLOR_INFO> portColorList;
@@ -90,6 +90,7 @@ bool HatchMessenger::splitMessage(QByteArray *data)
 void HatchMessenger::recvMessage()
 {
     QByteArray data = client->readAll();
+
 
     splitMessage(&data);
 }
@@ -178,7 +179,8 @@ void HatchMessenger::initSendList()
 
 void HatchMessenger::sendMessage(quint16 msgType, const QString &msg,ENUM_SEND_MODE sendmode)
 {
-    qDebug() << "Sending msg: " << msgType << msg;
+    if( msgType != 4002 )
+        qDebug() << "Sending msg: " << msgType << msg;
     QByteArray data = buildPackage(msgType,1,msg.toStdString().c_str());
     client->write(data);
 }
@@ -195,7 +197,7 @@ void HatchMessenger::sendHeartBeat(const QString& rdtId, const QString& userId)
     timer->start();
     connect(timer, &QTimer::timeout,[=](){
         static int heartbeatno = 0;
-        qDebug() << "send heartbeat no." << ++heartbeatno;
+        //qDebug() << "send heartbeat no." << ++heartbeatno;
         sendMessage(ENUM_QUERY_RDT_STATUS_4002,msg);
     });
 
@@ -212,7 +214,7 @@ void HatchMessenger::sendMessage4000(const QString &rdtId)
 void HatchMessenger::sendMessage4001(const QString &rdtId, const QString &userId, const QString &password)
 {
     //RDTID*LOGTYPE*USERNAME*PASSWORD
-    QString msg = rdtId.toUpper() + "*7*" + userId + "*" + password;
+    QString msg = rdtId.toUpper() + "*7*" + userId + "*" + password + "*";
     sendMessage(ENUM_QUERY_RDT_LOGIN_4001,msg);
 }
 
@@ -221,7 +223,7 @@ void HatchMessenger::sendmessage4004(const QString& pow, const QString& vesselRe
 {
     //RDTID**VesselRefNo*USERNAME*CraneUserId*BundleId
     QString msg = QString("RHX") + "*" + pow.toUpper() + "*" + vesselRef.toUpper() +
-                  "*" + "RHX123" +"*" + craneId + "*" + bundleId;
+                  "*" + "RHX123" +"*" + craneId + "*" + bundleId + "*";
     sendMessage(ENUM_QUERY_RDT_POINT_AND_VESSEL_LOGIN_4004,msg);
 }
 
