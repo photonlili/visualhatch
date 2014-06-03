@@ -227,9 +227,24 @@ Item
                 pinch.target: main_view
                 enabled: true
                 onPinchUpdated: {
-                    //g_scale = pinch.scale
-                    slot_container.scale = pinch.scale
-                    console.log(g_scale)
+                    //slot_container.scale = pinch.scale
+                    //console.log(g_scale)
+//                    console.log((pinch.center.x - pinch.previousCenter.x));
+//                    if((pinch.center.x - pinch.previousCenter.x) > 1) {
+//                        rootRect.onMenuLeft()
+//                    }
+                }
+
+                property real startedX;
+                property real endedX;
+                onPinchStarted: {
+                    startedX = pinch.center.x
+                }
+                onPinchFinished: {
+                    endedX = pinch.center.x
+                    console.log(endedX-startedX)
+                    if( ( endedX - startedX ) > 1 )
+                        rootRect.onMenuLeft();
                 }
             }
 
@@ -246,7 +261,6 @@ Item
 
                 width: 50
                 height: 50
-                scale: g_scale
 
                 Column {
                     spacing: 6

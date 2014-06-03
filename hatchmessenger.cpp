@@ -6,16 +6,24 @@
 #include <QThread>
 #include <QString>
 #include <QList>
+#include <QFile>
+#include <QDir>
 
-const QString HOST = "192.168.0.109";
 
+
+//const QString HOST = "192.168.0.109";
+const QString HOST = "192.168.1.4";
 User user;
+
 QList<PORT_COLOR_INFO> portColorList;
+CShipData shipData;
 
 HatchMessenger::HatchMessenger(QObject *parent) :
     QObject(parent)
 {
     client = new QTcpSocket(this);
+
+    user.sharedPath = "/Users/lixu/Downloads/ntos/NGB-data/NGB-Shared/";
 
     initReaderList();
 
@@ -41,6 +49,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 
     //outlist.push_back(data);
     //initSendList();
+    loadShipData(&shipData, getShipFileName(QString("35TJ")));
 
 }
 
@@ -175,6 +184,39 @@ void HatchMessenger::initSendList()
 
         outlist.push_back(data);
     });
+}
+
+QString HatchMessenger::getShipFileName(const QString &vesselClass)
+{
+
+    QDir dir("/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/ship_files");
+
+    QStringList fileList =  dir.entryList(QStringList("*35TJ*.nsd"));
+    if( fileList.size() )
+        return fileList.at(0);
+
+    return QString("");
+}
+
+int HatchMessenger::loadShipData(CShipData *pShipData, const QString &shipFile)
+{
+    FILE *fp;
+    //char tmp[1024] = {0};
+    //sprintf(tmp,"%sship_files\\%s", user.sharedPath.toStdString().c_str(),shipFile);
+    QString filePath;
+    filePath = "/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/ship_files/" + shipFile;
+    fp = fopen(filePath.toStdString().c_str(),"rb");
+    if (fp==NULL)
+    {
+      return(-1);
+    }
+
+
+    int rtn;
+    rtn = pShipData->ImportShipData(fp,(char*)(filePath.toStdString().c_str()));
+    fclose(fp);
+
+    return rtn;
 }
 
 void HatchMessenger::sendMessage(quint16 msgType, const QString &msg,ENUM_SEND_MODE sendmode)

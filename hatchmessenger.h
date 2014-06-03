@@ -7,6 +7,7 @@
 #include <QByteArray>
 #include "common.h"
 #include "messagereader.h"
+#include "ShipData.h"
 
 class HatchMessenger : public QObject
 {
@@ -49,6 +50,9 @@ private:
     bool splitMessage(QByteArray* data);
 
     void stateChanged(QAbstractSocket::SocketState socketState);
+
+    int loadShipData( CShipData *pShipData,const QString& shipFile );
+    QString getShipFileName( const QString& vesselClass );
 
 
 

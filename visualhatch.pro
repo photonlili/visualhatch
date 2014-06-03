@@ -9,7 +9,8 @@ QML_IMPORT_PATH =
 # The .cpp file which was generated for your project. Feel free to hack it.
 SOURCES += main.cpp \
     hatchmessenger.cpp \
-    messagereader.cpp
+    messagereader.cpp \
+    ShipData.cpp
 
 # Installation path
 # target.path =
@@ -21,7 +22,8 @@ qtcAddDeployment()
 HEADERS += \
     hatchmessenger.h \
     common.h \
-    messagereader.h
+    messagereader.h \
+    ShipData.h
 
 
 Qt += network quick

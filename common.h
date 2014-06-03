@@ -16,6 +16,7 @@ struct User
     QString powName;
     QString vesselRef;
     QString vesselClass;
+    QString sharedPath;
 };
 
 typedef struct port_color_com_info
