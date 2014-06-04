@@ -9,10 +9,16 @@
 #include <QFile>
 #include <QDir>
 
+#include "slotgroup.h"
+
 
 
 //const QString HOST = "192.168.0.109";
 const QString HOST = "192.168.1.4";
+
+
+QList<SlotGroup*> slotGroups;
+
 User user;
 
 QList<PORT_COLOR_INFO> portColorList;
@@ -23,7 +29,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
 {
     client = new QTcpSocket(this);
 
-    user.sharedPath = "/Users/lixu/Downloads/ntos/NGB-data/NGB-Shared/";
+    user.sharedPath = "/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/";
 
     initReaderList();
 
@@ -50,6 +56,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
     //outlist.push_back(data);
     //initSendList();
     loadShipData(&shipData, getShipFileName(QString("35TJ")));
+    loadSlotGroups();
 
 }
 
@@ -189,7 +196,7 @@ void HatchMessenger::initSendList()
 QString HatchMessenger::getShipFileName(const QString &vesselClass)
 {
 
-    QDir dir("/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/ship_files");
+    QDir dir(user.sharedPath + "ship_files");
 
     QStringList fileList =  dir.entryList(QStringList("*35TJ*.nsd"));
     if( fileList.size() )
@@ -204,7 +211,7 @@ int HatchMessenger::loadShipData(CShipData *pShipData, const QString &shipFile)
     //char tmp[1024] = {0};
     //sprintf(tmp,"%sship_files\\%s", user.sharedPath.toStdString().c_str(),shipFile);
     QString filePath;
-    filePath = "/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/ship_files/" + shipFile;
+    filePath = user.sharedPath + "ship_files/" + shipFile;
     fp = fopen(filePath.toStdString().c_str(),"rb");
     if (fp==NULL)
     {
@@ -216,7 +223,108 @@ int HatchMessenger::loadShipData(CShipData *pShipData, const QString &shipFile)
     rtn = pShipData->ImportShipData(fp,(char*)(filePath.toStdString().c_str()));
     fclose(fp);
 
+    qDebug() << shipData.m_head.usNStks;
     return rtn;
+}
+
+void HatchMessenger::loadSlotGroups()
+{
+    int layer = 1;
+    for( int i = 0; i < 2*(shipData.m_head.usBays); i++ )
+    {
+        int maxTop = 0;
+        int minBottom = 999;
+
+        int bay = i/2+1;
+        for( int j = 0; j < shipData.m_head.usNStks; j++)
+        {
+            if( shipData.m_pStack[j].usBay == bay
+                && shipData.m_pStack[j].usLayer == layer )
+            {
+                int height = shipData.m_pStack[j].usTTier;
+                maxTop = height>maxTop?height:maxTop;
+
+                int bottom = shipData.m_pStack[j].usBTier;
+                minBottom = bottom<minBottom?bottom:minBottom;
+            }
+        }
+
+        SlotGroup* group = new SlotGroup;
+        int height = maxTop - minBottom + 1;
+
+        group->bayLayer = layer;
+        group->bayNo = bay*2-1;
+
+        for( int j = 0; j < shipData.m_head.usNStks; j++)
+        {
+            if( shipData.m_pStack[j].usBay == bay
+                && shipData.m_pStack[j].usLayer == layer )
+            {
+                int top = shipData.m_pStack[j].usTTier;
+                int bottom = shipData.m_pStack[j].usBTier;
+
+                int bottomGap = bottom - minBottom;
+                int topGap = maxTop - top;
+
+                QList<Slot*> column;
+
+                while( topGap > 0 )
+                {
+                    column.push_back(new Slot(false,group));
+                    --topGap;
+                }
+
+                for( int k = bottom; k < top+1; k++ )
+                {
+                    column.push_back(new Slot(true,group));
+                }
+
+                while( bottomGap > 0 )
+                {
+                    column.push_back(new Slot(false,group));
+                    --bottomGap;
+                }
+
+                int stack = shipData.m_pStack[j].usStack;
+
+                if( stack&1 != 0 )
+                {
+                    group->columns.push_back(column);
+                }
+                else
+                {
+                    group->columns.push_front(column);
+                }
+            }
+        }
+
+        slotGroups.push_back(group);
+
+        layer = (layer==1) ? 2:1;
+    }
+
+    /// useful debug info
+    /*
+    foreach( SlotGroup* group, slotGroups )
+    {
+        qDebug() << "------------------------------";
+        qDebug() << QString::number(group->bayNo) + " " + QString::number(group->bayLayer) + " " + QString::number(group->columns.count());
+        foreach( QList<Slot*> column, group->columns )
+        {
+            QString str;
+            foreach( Slot* slot, column )
+            {
+                if( slot->isVisiable )
+                    str += "1 ";
+                else
+                    str += "0 ";
+            }
+            qDebug() << str;
+        }
+        qDebug() << "------------------------------";
+
+    }
+    */
 }
 
 void HatchMessenger::sendMessage(quint16 msgType, const QString &msg,ENUM_SEND_MODE sendmode)

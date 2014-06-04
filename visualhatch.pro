@@ -10,7 +10,9 @@ QML_IMPORT_PATH =
 SOURCES += main.cpp \
     hatchmessenger.cpp \
     messagereader.cpp \
-    ShipData.cpp
+    ShipData.cpp \
+    slot.cpp \
+    slotgroup.cpp
 
 # Installation path
 # target.path =
@@ -23,7 +25,9 @@ HEADERS += \
     hatchmessenger.h \
     common.h \
     messagereader.h \
-    ShipData.h
+    ShipData.h \
+    slot.h \
+    slotgroup.h
 
 
 Qt += network quick

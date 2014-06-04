@@ -221,34 +221,7 @@ Item
                 }
             }
 
-            PinchArea {
-                property real  g_scale
-                anchors.fill: parent
-                pinch.target: main_view
-                enabled: true
-                onPinchUpdated: {
-                    //slot_container.scale = pinch.scale
-                    //console.log(g_scale)
-//                    console.log((pinch.center.x - pinch.previousCenter.x));
-//                    if((pinch.center.x - pinch.previousCenter.x) > 1) {
-//                        rootRect.onMenuLeft()
-//                    }
-                }
-
-                property real startedX;
-                property real endedX;
-                onPinchStarted: {
-                    startedX = pinch.center.x
-                }
-                onPinchFinished: {
-                    endedX = pinch.center.x
-                    console.log(endedX-startedX)
-                    if( ( endedX - startedX ) > 1 )
-                        rootRect.onMenuLeft();
-                }
-            }
-
-            Rectangle {
+            ScrollView{
                 id: slot_container
                 anchors.fill: parent
                 anchors.top: menu_bar.bottom
@@ -256,33 +229,57 @@ Item
                 anchors.leftMargin: 15
                 anchors.rightMargin: 15
                 anchors.bottomMargin: 15
+                frameVisible: false
 
-                border.color: "green"
 
-                width: 50
-                height: 50
 
-                Column {
-                    spacing: 6
-                    Rectangle { color: "red"; width: 50; height: 50 }
-                        Rectangle {
-                            id: greenRect; color: "green"; width: 20; height: 50
-
-                        }
+                Grid {
+                    columns: 2
+                    spacing : 20
+                    Grid {
+                        columns: 3
+                        spacing: 2
+                        Rectangle { color: "red"; width: 50; height: 50 }
+                        Rectangle { color: "green"; width: 20; height: 50 }
                         Rectangle { color: "blue"; width: 50; height: 20 }
-                        focus: true
-                        Keys.onSpacePressed: greenRect.visible = !greenRect.visible
-                }
+                        Rectangle { color: "cyan"; width: 50; height: 50 }
+                        Rectangle { color: "magenta"; width: 10; height: 10 }
+                    }
 
-                Rectangle {
-                    id: test_rect
-                    width:20
-                    height:20
-                    border.color: "red"
-                    anchors.centerIn: parent
-                    scale: parent.scale
+                    Grid {
+                        columns: 3
+                        spacing: 2
+                        Rectangle { color: "red"; width: 50; height: 50 }
+                        Rectangle { color: "green"; width: 20; height: 50 }
+                        Rectangle { color: "blue"; width: 50; height: 20 }
+                        Rectangle { color: "cyan"; width: 50; height: 50 }
+                        Rectangle { color: "magenta"; width: 10; height: 10 }
+                    }
+
+                    Grid {
+                        columns: 3
+                        spacing: 2
+                        Rectangle { color: "red"; width: 50; height: 50 }
+                        Rectangle { color: "green"; width: 20; height: 50 }
+                        Rectangle { color: "blue"; width: 50; height: 20 }
+                        Rectangle { color: "cyan"; width: 50; height: 50 }
+                        Rectangle { color: "magenta"; width: 10; height: 10 }
+                    }
+
+                    Grid {
+                        columns: 3
+                        spacing: 2
+                        Rectangle { color: "red"; width: 50; height: 50 }
+                        Rectangle { color: "green"; width: 20; height: 50 }
+                        Rectangle { color: "blue"; width: 50; height: 20 }
+                        Rectangle { color: "cyan"; width: 50; height: 50 }
+                        Rectangle { color: "magenta"; width: 10; height: 10 }
+                    }
+
+
                 }
             }
+
         }
 
 

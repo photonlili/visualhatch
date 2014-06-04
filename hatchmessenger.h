@@ -54,6 +54,7 @@ private:
     int loadShipData( CShipData *pShipData,const QString& shipFile );
     QString getShipFileName( const QString& vesselClass );
 
+    void loadSlotGroups();
 
 
 };

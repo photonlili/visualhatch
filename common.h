@@ -2,6 +2,88 @@
 #define COMMON_H
 
 #include <QString>
+
+
+
+struct CtnInfo
+{
+    QString	ContainerID; //4位大写英文字母+7位阿拉伯数字组成
+    QString	EquipType; //箱型尺寸 22GP
+    QChar   HighCube;      //高箱标记 Y/N
+    QChar	BigCtn;		   //大小箱
+    QChar   Category;           //箱类别
+    quint32 Weight;            //箱量，1位小数，如310 （表示31吨）
+    QChar   Status;           //空重信息，F-重箱，E-空箱
+    QChar   RFFlag;         //表温控箱标志。Y 为温控箱，N 为不是温控箱
+    quint32 ReeferTemp;     //温控箱温度，1位小数，如-129表示-12.9度
+    QChar	TempUnit;	//为温度单位'F'ahrenheit; or 'C'elsius Temp In Pref.Units 温度单位C/F
+    QChar   HazardFlag;  //危险品箱标记
+    QString HazardClasses;	// ioHazardClasses 危险品等级
+    QChar   ODFlag;      //超限箱标记
+    quint32 ioOD_B;	// ioOD_B 货物超出箱子后端长度（厘米）
+    quint32 ioOD_F;	// 货物超出箱子前端长度（厘米）
+    quint32 ioOD_L;	// 货物超出箱子左侧长度（厘米）
+    quint32 ioOD_R;	// 货物超出箱子右侧长度（厘米）
+    quint32 ioOD_T;	// 货物超出箱子顶端长度（厘米）
+    QChar   DMFlag;  //残损箱标记
+    QString DschPort; //卸货港
+    QString LoadPort; //装货港
+    QString LineOperator; //箱主
+    QChar   Mode;             //装卸模式，L-装船，D-卸船
+    QChar   CurrentLocType;  //当前位置，Y-堆场，T-集卡，V-船上
+    QString CurrentPos;  //当前详细位置
+    QChar   FromLocType;     //from位置
+    QString FromPos;     //from详细位置
+    QChar   ToLocType;       //to位置
+    QString ToPos;       //to详细位置
+    QString TwinCtnID;   //双箱箱号
+    QString	VesselRef;   //船舶参考号
+    QChar	MidPosLocType;	 // V/Y
+    QString	MidPos;		 //中间计划位置
+    QChar   JobDone;		 // 装卸作业是否完成，Y/N
+    QString	GroupCode;	 //箱子标记，如FPX
+    QChar	Orphan;			 // 孤儿箱标记
+
+    QString	CraneId;		//桥吊号
+    QString	Time;
+    QChar	DLFlag;				//错位箱标志
+
+    QString getSlotPos()
+    {
+        switch(Mode.cell())
+        {
+        case 'D':
+            {
+                if( FromLocType == 'V' )
+                {
+                    return FromPos;
+                }
+                else if( CurrentLocType == 'V' )
+                {
+                    return CurrentPos;
+                }
+                break;
+            }
+        case 'L':
+            {
+                if( ToLocType == 'V' && JobDone == 'N')
+                {
+                    return ToPos;
+                }
+                else if( ToLocType == 'V' && JobDone == 'Y')
+                {
+                    return CurrentPos;
+                }
+                else if( CurrentLocType == 'V' )
+                {
+                    return CurrentPos;
+                }
+                break;
+            }
+        }
+    }
+};
+
 /// Global user settings
 /// RDTid UseId CraneId BundleId ...
 struct User
