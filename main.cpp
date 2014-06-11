@@ -38,7 +38,9 @@ int main(int argc, char *argv[])
     QObject::connect(item, SIGNAL(message4001(QString, QString, QString)),
                                   msger, SLOT(sendMessage4001(QString,QString,QString)) );
     QObject::connect(item, SIGNAL(message4004(QString, QString, QString, QString)),
-                                  msger, SLOT(sendmessage4004(QString,QString,QString,QString)));
+                                  msger, SLOT(sendMessage4004(QString,QString,QString,QString)));
+    QObject::connect(item, SIGNAL(message4067(QString, QString)), msger, SLOT(sendMessage4067(QString,QString)) );
+    //QObject::connect(item, SIGNAL(message4008()),msger,SLOT(sendMessage4008()) );
 
 
 

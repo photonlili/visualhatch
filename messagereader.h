@@ -65,4 +65,17 @@ public:
     void read(QByteArray *data);
 };
 
+class Reader4167 : public MessageReader
+{
+    Q_OBJECT
+public:
+    explicit Reader4167(QObject* parent = 0):MessageReader(parent){
+        m_type = ENUM_AMSWER_RDT_BAY_STOWAGE_4167;
+    }
+
+    void read(QByteArray *data);
+    void readContainer(const QString &data);
+
+};
+
 #endif // MESSAGEREADER_H

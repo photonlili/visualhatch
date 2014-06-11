@@ -17,6 +17,8 @@ Item
     signal message4000(string msg)
     signal message4001(string rdtId, string userId, string password)
     signal message4004(string pow, string vessel, string craneId, string bundleId)
+    signal message4067( string start, string end )
+    signal message4008()
 
     function emitMessage4000(data){
         if( data.length )
@@ -45,6 +47,21 @@ Item
             callback("Pow name");
         else if( vessel.length === 0 )
             callback("Vessel Reference");
+    }
+
+    function emitMessage4067( start, end, callback ) {
+        if( start.length && end.length ){
+            message4067( start, end );
+            console.log( "Emit 4067: " + start + " " + end );
+            return;
+        }
+        else
+            callback();
+    }
+
+    function emitMessage4008(callback){
+        message4008();
+        callback();
     }
 
     //PopupDialog{}

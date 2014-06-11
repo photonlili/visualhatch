@@ -82,7 +82,7 @@ Item
                                                 menu_bundle_input.text, function(msg){
                                                     console.log("Invalid input: " + msg)
                                                 })
-                           rootRect.onMenuLeft()
+                           //rootRect.onMenuLeft()
                        }
                    }
 
@@ -117,6 +117,48 @@ Item
                            rootRect.onMenuLeft()
                        }
                    }
+
+                   TextField {
+                       id: menu_start_bay
+                       placeholderText: "Start Bay No."
+                       height:20
+                       width: rootRect.width * 0.22
+                       onAccepted: {
+                           root.emitMessage4067(menu_start_bay.text,menu_end_bay.text, function(){
+                               console.log("Invalid input");
+                           });
+
+                           //rootRect.onMenuLeft()
+                       }
+                   }
+
+                   TextField {
+                       id: menu_end_bay
+                       placeholderText: "End Bay No."
+                       height:20
+                       width: rootRect.width * 0.22
+                       onAccepted: {
+                           root.emitMessage4067(menu_start_bay.text,menu_end_bay.text, function(){
+                               console.log("Invalid input");
+                           });
+
+                           //rootRect.onMenuLeft()
+                       }
+                   }
+
+                   Button {
+                       id: menu_logout_button
+                       text: "Logout"
+                       height: 20
+                       width: rootRect.width * 0.22
+                       onClicked: {
+                           root.emitMessage4008(function(){
+                               console.log("logout")
+                           })
+                       }
+                   }
+
+
 
                 }
 
@@ -290,6 +332,8 @@ Item
             //onMenu()
 
         }
+
+
 
         //PopupDialog{}
         //WorkPointDialog{}

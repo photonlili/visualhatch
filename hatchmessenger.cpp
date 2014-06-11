@@ -13,10 +13,11 @@
 
 
 
-//const QString HOST = "192.168.0.109";
+//const QString HOST = "192.168.0.118";
 const QString HOST = "192.168.1.4";
 
 
+QList<CtnInfo> ctnList;
 QList<SlotGroup*> slotGroups;
 
 User user;
@@ -28,6 +29,7 @@ HatchMessenger::HatchMessenger(QObject *parent) :
     QObject(parent)
 {
     client = new QTcpSocket(this);
+    client->setReadBufferSize(0);
 
     user.sharedPath = "/Users/lixu/Downloads/ntos/NGB-data/NGB_Shared/";
 
@@ -51,12 +53,9 @@ HatchMessenger::HatchMessenger(QObject *parent) :
     });
 
     connectToHost();
-    //QByteArray data = buildPackage(4000,1,"hello");
 
-    //outlist.push_back(data);
-    //initSendList();
-    loadShipData(&shipData, getShipFileName(QString("35TJ")));
-    loadSlotGroups();
+    //loadShipData(&shipData, getShipFileName(QString("35TJ")));
+    //loadSlotGroups();
 
 }
 
@@ -66,6 +65,7 @@ void HatchMessenger::initReaderList()
     readerList.push_back(new Reader4101);
     readerList.push_back(new Reader4110);
     readerList.push_back(new Reader4130);
+    readerList.push_back(new Reader4167);
 }
 
 bool HatchMessenger::splitMessage(QByteArray *data)
@@ -92,23 +92,131 @@ bool HatchMessenger::splitMessage(QByteArray *data)
             reader->read(&msgBodyArray);
     }
 
-
-    /*if( header.msgType == ENUM_ANSWER_RDT_PARAM_4100 )
-        sendMessage4069();
-    if( header.msgType == ENUM_AMSWER_RDT_RH_VESSEL_TK_REFRESH_4169)
-        sendMessage4067();
-
-    */
-
     return false;
 }
 
 void HatchMessenger::recvMessage()
 {
     QByteArray data = client->readAll();
+    QList<QByteArray> dataList = data.split(0xff);
+
+    static bool splitted = false;
+
+    qDebug() << "----------------------------------------------";
+    qDebug() << "datalist.size(): " << dataList.size();
+
+    if( splitted )
+    {
+        dataList[0] = tmpData + dataList[0];
+        tmpData.clear();
+        splitted = false;
+    }
+
+    foreach( QByteArray data, dataList )
+    {
+        int len = 0;
+        int type = 0;
+        if( data.length() > 0 )
+        {
+            readHeader(&data,&len,&type);
+            QByteArray body = data.mid(sizeof(EC_HEADER));
+            qDebug() << "Header.Len: " << len << "data.length:" << body.length();
+            if( len == body.length() )
+            {
+                readBody(&body,len,type);
+            }
+            else
+            {
+                splitted = true;
+                tmpData = data;
+            }
+        }
+        qDebug() << "type: " << type << "data size: " << data.size();
+    }
+    qDebug() << "----------------------------------------------";
+
+    //qDebug() << *(data.end());
 
 
-    splitMessage(&data);
+    //splitMessage(&data);
+}
+
+int HatchMessenger::readBody( int len, int type )
+{
+    QByteArray data = client->read( len+1 );
+
+
+    foreach(MessageReader* reader, readerList)
+    {
+        if( reader->getMsgType() == type )
+            reader->read(&data);
+    }
+
+   // if( type != 3000 )
+    //char end;
+    //if( type != 4167 ) client->read(&end,1);
+
+    //if( type == ENUM_ANSWER_RDT_LOGIN_VESSEL_POW_INFO_4130 )
+        //sendMessage4067();
+
+    //qDebug() << ":::::::::: " << end;
+
+    return data.length();
+}
+
+int HatchMessenger::readBody(QByteArray *data, int len, int type)
+{
+    foreach(MessageReader* reader, readerList)
+    {
+        if( reader->getMsgType() == type )
+            reader->read(data);
+    }
+
+    return data->size();
+}
+
+void HatchMessenger::readHeader(QByteArray *data, int* len, int* type )
+{
+    QByteArray headerData = data->left(sizeof(EC_HEADER));
+
+    QDataStream msgStream(&headerData,QIODevice::ReadWrite);
+    msgStream.setByteOrder(QDataStream::LittleEndian);
+
+    EC_HEADER header = {0,0,0,0};
+    msgStream >> header.load_len;
+    msgStream >> header.msgType;
+    msgStream >> header.msgId;
+    msgStream >> header.sevId;
+
+    //qDebug() << "Reader Msg type:" << header.msgType << header.load_len;
+
+    *len = header.load_len;
+    *type = header.msgType;
+
+    //data->remove(0,sizeof(EC_HEADER));
+}
+
+void HatchMessenger::readHeader( int* len, int* type )
+{
+    QByteArray data = client->read(sizeof(EC_HEADER));
+    QDataStream msgStream(&data,QIODevice::ReadWrite);
+    msgStream.setByteOrder(QDataStream::LittleEndian);
+
+    //char end = 255;
+
+    EC_HEADER header = {0,0,0,0};
+    msgStream >> header.load_len;
+    msgStream >> header.msgType;
+    msgStream >> header.msgId;
+    msgStream >> header.sevId;
+
+    //if( header.msgType == 3000 )
+    //    client->read(1); // get rid of 255/255
+
+    qDebug() << "Reader Msg type:" << header.msgType << header.load_len;
+
+    *len = header.load_len;
+    *type = header.msgType;
 }
 
 void HatchMessenger::connectToHost()
@@ -368,7 +476,7 @@ void HatchMessenger::sendMessage4001(const QString &rdtId, const QString &userId
     sendMessage(ENUM_QUERY_RDT_LOGIN_4001,msg);
 }
 
-void HatchMessenger::sendmessage4004(const QString& pow, const QString& vesselRef,
+void HatchMessenger::sendMessage4004(const QString& pow, const QString& vesselRef,
                                      const QString& craneId, const QString& bundleId)
 {
     //RDTID**VesselRefNo*USERNAME*CraneUserId*BundleId
@@ -383,8 +491,13 @@ void HatchMessenger::sendMessage4069()
     sendMessage(ENUM_QUERY_RDT_RH_VESSEL_TK_REFRESH_4069, msg);
 }
 
-void HatchMessenger::sendMessage4067()
+void HatchMessenger::sendMessage4067( const QString& start, const QString& end )
 {
-    QString msg = "RH01*EASMG1*1*3*";
+    QString msg;
+    msg += user.rdtId.toUpper() + "*" +
+           user.vesselRef.toUpper() + "*" +
+           start + "*" +  end + "*";
+
+    //QString msg = "RH01*EASMG1*1*3*";
     sendMessage(ENUM_QUERY_RDT_BAY_STOWAGE_4067, msg);
 }
